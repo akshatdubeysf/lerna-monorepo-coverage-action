@@ -37,6 +37,7 @@ const path_1 = __nccwpck_require__(17);
 async function run() {
     const reportsPath = '';
     const types = core.getInput('folders').split(',').map(v => v.trim());
+    console.log(types);
     try {
         types.forEach(async (type) => {
             const items = await getSubFolders(type);
