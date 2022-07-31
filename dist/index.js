@@ -44,9 +44,9 @@ async function run() {
         .map((v) => v.trim());
     console.log(types);
     try {
-        types.forEach(async (type) => {
+        for (let type of types) {
             const items = await getSubFolders(type);
-            items.forEach(async (item) => {
+            for (let item of items) {
                 const itemPath = (0, path_1.resolve)(type, item);
                 if (await checkIfDirectory(itemPath)) {
                     console.log("exists");
@@ -54,14 +54,17 @@ async function run() {
                     if ((0, fs_1.existsSync)(targetFilePath)) {
                         console.log(`Copying the coverage report for ${item}...`);
                         const destFilePath = (0, path_1.resolve)(reportsPath, `${item}.json`);
-                        (0, io_1.cp)(targetFilePath, destFilePath, { recursive: true, force: false });
+                        await (0, io_1.cp)(targetFilePath, destFilePath, {
+                            recursive: true,
+                            force: false,
+                        });
                     }
                     else {
                         console.log("coverage does not exists");
                     }
                 }
-            });
-        });
+            }
+        }
     }
     catch (e) {
         core.setFailed(e);
@@ -78,6 +81,7 @@ async function run() {
         },
     };
     await (0, exec_1.exec)("ls", [".nyc_output", "-a"]);
+    await (0, exec_1.exec)("cat", [".nyc_output/audit-service.json"]);
     await (0, exec_1.exec)("npx", ["nyc", "report", "--reporter", "text-summary"], options);
     console.log(myOutput);
     console.log(myError);
