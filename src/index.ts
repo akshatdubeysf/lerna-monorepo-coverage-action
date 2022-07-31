@@ -9,11 +9,9 @@ async function run(): Promise<void> {
   console.log(types);
   try {
     types.forEach(async (type: string) => {
-      console.log(type);
       const items = await getSubFolders(type);
       items.forEach(async (item) => {
         const itemPath = resolve(type, item);
-        console.log(itemPath);
         if (await checkIfDirectory(itemPath)) {
           console.log('exists');
           const targetFilePath = resolve(
@@ -21,14 +19,14 @@ async function run(): Promise<void> {
             "coverage",
             "coverage-final.json"
           );
-          console.log(targetFilePath);
 
           if (existsSync(targetFilePath)) {
-            console.log('exists');
             console.log(`Copying the coverage report for ${item}...`);
             const destFilePath = resolve(reportsPath, `${item}.json`);
             copyFileSync(targetFilePath, destFilePath);
             exec('nyc report --reporter json-summary')
+          } else {
+            console.log('coverage does not exists');
           }
         }
       });

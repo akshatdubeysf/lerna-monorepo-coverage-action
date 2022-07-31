@@ -56,6 +56,9 @@ async function run() {
                         (0, fs_1.copyFileSync)(targetFilePath, destFilePath);
                         (0, exec_1.exec)('nyc report --reporter json-summary');
                     }
+                    else {
+                        console.log('coverage does not exists');
+                    }
                 }
             });
         });
