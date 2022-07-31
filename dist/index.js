@@ -43,11 +43,14 @@ async function run() {
             console.log(type);
             const items = await getSubFolders(type);
             items.forEach(async (item) => {
-                console.log(item);
                 const itemPath = (0, path_1.resolve)(type, item);
+                console.log(itemPath);
                 if (await checkIfDirectory(itemPath)) {
+                    console.log('exists');
                     const targetFilePath = (0, path_1.resolve)(itemPath, "coverage", "coverage-final.json");
+                    console.log(targetFilePath);
                     if ((0, fs_1.existsSync)(targetFilePath)) {
+                        console.log('exists');
                         console.log(`Copying the coverage report for ${item}...`);
                         const destFilePath = (0, path_1.resolve)(reportsPath, `${item}.json`);
                         (0, fs_1.copyFileSync)(targetFilePath, destFilePath);

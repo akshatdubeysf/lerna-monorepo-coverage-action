@@ -12,15 +12,19 @@ async function run(): Promise<void> {
       console.log(type);
       const items = await getSubFolders(type);
       items.forEach(async (item) => {
-        console.log(item);  
         const itemPath = resolve(type, item);
+        console.log(itemPath);
         if (await checkIfDirectory(itemPath)) {
+          console.log('exists');
           const targetFilePath = resolve(
             itemPath,
             "coverage",
             "coverage-final.json"
           );
+          console.log(targetFilePath);
+
           if (existsSync(targetFilePath)) {
+            console.log('exists');
             console.log(`Copying the coverage report for ${item}...`);
             const destFilePath = resolve(reportsPath, `${item}.json`);
             copyFileSync(targetFilePath, destFilePath);
