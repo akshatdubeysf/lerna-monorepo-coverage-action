@@ -59,6 +59,7 @@ async function run() {
                             recursive: true,
                             force: false,
                         });
+                        await (0, exec_1.exec)("sed", ["-i", `"s/\\/github\\/workspace/\\./g"`, destFilePath]);
                     }
                     else {
                         console.log("coverage does not exists");

@@ -34,6 +34,7 @@ async function run(): Promise<void> {
               recursive: true,
               force: false,
             });
+            await exec("sed", ["-i", `"s/\\/github\\/workspace/\\./g"`, destFilePath]);
           } else {
             console.log("coverage does not exists");
           }
