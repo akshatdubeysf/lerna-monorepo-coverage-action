@@ -47,8 +47,6 @@ async function run(): Promise<void> {
   let myOutput = "";
   let myError = "";
 
-  const artifactClient = create();
-  const output = await artifactClient.uploadArtifact('output-jsons', jsons, resolve('.'));
   const options: any = {};
   options.listeners = {
     stdout: (data: Buffer) => {
@@ -58,6 +56,10 @@ async function run(): Promise<void> {
       myError += data.toString();
     },
   };
+  // fix paths in reported json
+  await exec("find", [
+    `./.nyc_output -type f -path "*.json" -print0 | xargs -0 sed -i '' -e "s/\/github\/workspace/\./g"`,
+  ]);
   await exec("npx", ["nyc", "report", "--reporter", "text-summary"], options);
   console.log(myOutput);
   console.log(myError);
