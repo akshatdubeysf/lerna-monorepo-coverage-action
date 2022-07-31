@@ -6,7 +6,7 @@ import { resolve } from "path";
 async function run(): Promise<void> {
   const reportsPath = '';
   const types = core.getInput('folders').split(',').map(v => v.trim());
-
+  console.log(types);
   try {
     types.forEach(async (type: string) => {
       const items = await getSubFolders(type);
