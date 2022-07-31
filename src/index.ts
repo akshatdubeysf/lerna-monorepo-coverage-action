@@ -34,7 +34,12 @@ async function run(): Promise<void> {
               recursive: true,
               force: false,
             });
-            await exec("sed", ["-i", `"s/\\/github\\/workspace/\\./g"`, destFilePath]);
+            // fix paths in reported json
+            await exec("sed", [
+              "-i",
+              `s/\\/github\\/workspace/\\./g`,
+              destFilePath,
+            ]);
           } else {
             console.log("coverage does not exists");
           }
@@ -57,10 +62,6 @@ async function run(): Promise<void> {
       myError += data.toString();
     },
   };
-  // fix paths in reported json
-  await exec("find", [
-    `./.nyc_output -type f -path "*.json" -print0 | xargs -0 sed -i "s/\\/github\\/workspace/\\./g"`,
-  ]);
   await exec("npx", ["nyc", "report", "--reporter", "text-summary"], options);
   console.log(myOutput);
   console.log(myError);
