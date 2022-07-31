@@ -35,7 +35,7 @@ const exec_1 = __nccwpck_require__(288);
 const fs_1 = __nccwpck_require__(147);
 const path_1 = __nccwpck_require__(17);
 async function run() {
-    const reportsPath = "";
+    const reportsPath = ".nyc_output";
     const types = core
         .getInput("folders")
         .split(",")

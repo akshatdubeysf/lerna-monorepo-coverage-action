@@ -4,7 +4,7 @@ import { copyFileSync, existsSync, readdir, stat } from "fs";
 import { resolve } from "path";
 
 async function run(): Promise<void> {
-  const reportsPath = "";
+  const reportsPath = ".nyc_output";
   const types = core
     .getInput("folders")
     .split(",")
