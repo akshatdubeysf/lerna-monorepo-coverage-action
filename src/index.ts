@@ -1,3 +1,4 @@
+import { create } from "@actions/artifact";
 import * as core from "@actions/core";
 import { exec } from "@actions/exec";
 import { mkdirP, cp } from "@actions/io";
@@ -6,12 +7,12 @@ import { resolve } from "path";
 
 async function run(): Promise<void> {
   const reportsPath = ".nyc_output";
+  const jsons = [];
   await mkdirP(reportsPath);
   const types = core
     .getInput("folders")
     .split(",")
     .map((v) => v.trim());
-  console.log(types);
   try {
     for (let type of types) {
       const items = await getSubFolders(type);
@@ -28,6 +29,7 @@ async function run(): Promise<void> {
           if (existsSync(targetFilePath)) {
             console.log(`Copying the coverage report for ${item}...`);
             const destFilePath = resolve(reportsPath, `${item}.json`);
+            jsons.push(destFilePath);
             await cp(targetFilePath, destFilePath, {
               recursive: true,
               force: false,
@@ -45,6 +47,8 @@ async function run(): Promise<void> {
   let myOutput = "";
   let myError = "";
 
+  const artifactClient = create();
+  const output = await artifactClient.uploadArtifact('output-jsons', jsons, resolve('.'));
   const options: any = {};
   options.listeners = {
     stdout: (data: Buffer) => {
@@ -54,8 +58,6 @@ async function run(): Promise<void> {
       myError += data.toString();
     },
   };
-  await exec("ls", [".nyc_output", "-a"]);
-  await exec("cat", [".nyc_output/audit-service.json"]);
   await exec("npx", ["nyc", "report", "--reporter", "text-summary"], options);
   console.log(myOutput);
   console.log(myError);
