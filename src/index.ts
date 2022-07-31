@@ -58,7 +58,7 @@ async function run(): Promise<void> {
   };
   // fix paths in reported json
   await exec("find", [
-    `./.nyc_output -type f -path "*.json" -print0 | xargs -0 sed -i '' -e "s/\/github\/workspace/\./g"`,
+    `./.nyc_output -type f -path "*.json" -print0 | xargs -0 sed -i "s/\/github\/workspace/\./g"`,
   ]);
   await exec("npx", ["nyc", "report", "--reporter", "text-summary"], options);
   console.log(myOutput);
