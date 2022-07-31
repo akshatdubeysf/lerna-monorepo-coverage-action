@@ -35,29 +35,41 @@ const exec_1 = __nccwpck_require__(288);
 const fs_1 = __nccwpck_require__(147);
 const path_1 = __nccwpck_require__(17);
 async function run() {
-    const reportsPath = '';
-    const types = core.getInput('folders').split(',').map(v => v.trim());
+    const reportsPath = "";
+    const types = core
+        .getInput("folders")
+        .split(",")
+        .map((v) => v.trim());
     console.log(types);
     try {
         types.forEach(async (type) => {
-            console.log(type);
             const items = await getSubFolders(type);
             items.forEach(async (item) => {
                 const itemPath = (0, path_1.resolve)(type, item);
-                console.log(itemPath);
                 if (await checkIfDirectory(itemPath)) {
-                    console.log('exists');
+                    console.log("exists");
                     const targetFilePath = (0, path_1.resolve)(itemPath, "coverage", "coverage-final.json");
-                    console.log(targetFilePath);
                     if ((0, fs_1.existsSync)(targetFilePath)) {
-                        console.log('exists');
                         console.log(`Copying the coverage report for ${item}...`);
                         const destFilePath = (0, path_1.resolve)(reportsPath, `${item}.json`);
                         (0, fs_1.copyFileSync)(targetFilePath, destFilePath);
-                        (0, exec_1.exec)('nyc report --reporter json-summary');
+                        let myOutput = "";
+                        let myError = "";
+                        const options = {};
+                        options.listeners = {
+                            stdout: (data) => {
+                                myOutput += data.toString();
+                            },
+                            stderr: (data) => {
+                                myError += data.toString();
+                            },
+                        };
+                        await (0, exec_1.exec)("npx", ["nyc", "report", "--reporter", "text-summary"], options);
+                        console.log(myOutput);
+                        console.log(myError);
                     }
                     else {
-                        console.log('coverage does not exists');
+                        console.log("coverage does not exists");
                     }
                 }
             });

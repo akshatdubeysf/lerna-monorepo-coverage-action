@@ -4,8 +4,11 @@ import { copyFileSync, existsSync, readdir, stat } from "fs";
 import { resolve } from "path";
 
 async function run(): Promise<void> {
-  const reportsPath = '';
-  const types = core.getInput('folders').split(',').map(v => v.trim());
+  const reportsPath = "";
+  const types = core
+    .getInput("folders")
+    .split(",")
+    .map((v) => v.trim());
   console.log(types);
   try {
     types.forEach(async (type: string) => {
@@ -13,7 +16,7 @@ async function run(): Promise<void> {
       items.forEach(async (item) => {
         const itemPath = resolve(type, item);
         if (await checkIfDirectory(itemPath)) {
-          console.log('exists');
+          console.log("exists");
           const targetFilePath = resolve(
             itemPath,
             "coverage",
@@ -24,14 +27,28 @@ async function run(): Promise<void> {
             console.log(`Copying the coverage report for ${item}...`);
             const destFilePath = resolve(reportsPath, `${item}.json`);
             copyFileSync(targetFilePath, destFilePath);
-            exec('npx nyc report --reporter json-summary')
+            let myOutput = "";
+            let myError = "";
+
+            const options: any = {};
+            options.listeners = {
+              stdout: (data: Buffer) => {
+                myOutput += data.toString();
+              },
+              stderr: (data: Buffer) => {
+                myError += data.toString();
+              },
+            };
+            await exec("npx",["nyc","report","--reporter","text-summary"], options);
+            console.log(myOutput);
+            console.log(myError);
           } else {
-            console.log('coverage does not exists');
+            console.log("coverage does not exists");
           }
         }
       });
     });
-  } catch(e: any) {
+  } catch (e: any) {
     core.setFailed(e);
   }
 }
