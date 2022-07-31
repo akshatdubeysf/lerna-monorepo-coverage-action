@@ -5,8 +5,7 @@ import { resolve } from "path";
 
 async function run(): Promise<void> {
   const reportsPath = '';
-  const lernaJson = require("./lerna.json");
-  const types = lernaJson.packages;
+  const types = core.getInput('folders').split(',').map(v => v.trim());
 
   try {
     types.forEach(async (type: string) => {
