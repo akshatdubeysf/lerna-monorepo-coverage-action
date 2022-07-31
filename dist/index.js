@@ -36,8 +36,7 @@ const fs_1 = __nccwpck_require__(147);
 const path_1 = __nccwpck_require__(17);
 async function run() {
     const reportsPath = '';
-    const lernaJson = __nccwpck_require__(809);
-    const types = lernaJson.packages;
+    const types = core.getInput('folders').split(',').map(v => v.trim());
     try {
         types.forEach(async (type) => {
             const items = await getSubFolders(type);
@@ -3371,14 +3370,6 @@ if (process.env.NODE_DEBUG && /\btunnel\b/.test(process.env.NODE_DEBUG)) {
   debug = function() {};
 }
 exports.debug = debug; // for test
-
-
-/***/ }),
-
-/***/ 809:
-/***/ ((module) => {
-
-module.exports = eval("require")("./lerna.json");
 
 
 /***/ }),
