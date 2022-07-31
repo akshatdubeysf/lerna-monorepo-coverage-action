@@ -24,7 +24,7 @@ async function run(): Promise<void> {
             console.log(`Copying the coverage report for ${item}...`);
             const destFilePath = resolve(reportsPath, `${item}.json`);
             copyFileSync(targetFilePath, destFilePath);
-            exec('nyc report --reporter json-summary')
+            exec('npx nyc report --reporter json-summary')
           } else {
             console.log('coverage does not exists');
           }
