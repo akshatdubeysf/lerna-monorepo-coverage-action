@@ -40,8 +40,10 @@ async function run() {
     console.log(types);
     try {
         types.forEach(async (type) => {
+            console.log(type);
             const items = await getSubFolders(type);
             items.forEach(async (item) => {
+                console.log(item);
                 const itemPath = (0, path_1.resolve)(type, item);
                 if (await checkIfDirectory(itemPath)) {
                     const targetFilePath = (0, path_1.resolve)(itemPath, "coverage", "coverage-final.json");

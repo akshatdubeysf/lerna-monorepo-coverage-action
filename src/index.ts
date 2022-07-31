@@ -9,8 +9,10 @@ async function run(): Promise<void> {
   console.log(types);
   try {
     types.forEach(async (type: string) => {
+      console.log(type);
       const items = await getSubFolders(type);
       items.forEach(async (item) => {
+        console.log(item);  
         const itemPath = resolve(type, item);
         if (await checkIfDirectory(itemPath)) {
           const targetFilePath = resolve(
