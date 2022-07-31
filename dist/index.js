@@ -55,20 +55,6 @@ async function run() {
                         console.log(`Copying the coverage report for ${item}...`);
                         const destFilePath = (0, path_1.resolve)(reportsPath, `${item}.json`);
                         (0, io_1.cp)(targetFilePath, destFilePath, { recursive: true, force: false });
-                        let myOutput = "";
-                        let myError = "";
-                        const options = {};
-                        options.listeners = {
-                            stdout: (data) => {
-                                myOutput += data.toString();
-                            },
-                            stderr: (data) => {
-                                myError += data.toString();
-                            },
-                        };
-                        await (0, exec_1.exec)("npx", ["nyc", "report", "--reporter", "text-summary"], options);
-                        console.log(myOutput);
-                        console.log(myError);
                     }
                     else {
                         console.log("coverage does not exists");
@@ -80,6 +66,21 @@ async function run() {
     catch (e) {
         core.setFailed(e);
     }
+    let myOutput = "";
+    let myError = "";
+    const options = {};
+    options.listeners = {
+        stdout: (data) => {
+            myOutput += data.toString();
+        },
+        stderr: (data) => {
+            myError += data.toString();
+        },
+    };
+    await (0, exec_1.exec)("ls", [".nyc_output", "-a"]);
+    await (0, exec_1.exec)("npx", ["nyc", "report", "--reporter", "text-summary"], options);
+    console.log(myOutput);
+    console.log(myError);
 }
 async function getSubFolders(path) {
     return new Promise((resolve, reject) => {

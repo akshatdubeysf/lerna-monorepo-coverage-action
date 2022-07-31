@@ -1,6 +1,6 @@
 import * as core from "@actions/core";
 import { exec } from "@actions/exec";
-import { mkdirP, cp} from "@actions/io";
+import { mkdirP, cp } from "@actions/io";
 import { existsSync, readdir, stat } from "fs";
 import { resolve } from "path";
 
@@ -29,21 +29,6 @@ async function run(): Promise<void> {
             console.log(`Copying the coverage report for ${item}...`);
             const destFilePath = resolve(reportsPath, `${item}.json`);
             cp(targetFilePath, destFilePath, { recursive: true, force: false });
-            let myOutput = "";
-            let myError = "";
-
-            const options: any = {};
-            options.listeners = {
-              stdout: (data: Buffer) => {
-                myOutput += data.toString();
-              },
-              stderr: (data: Buffer) => {
-                myError += data.toString();
-              },
-            };
-            await exec("npx",["nyc","report","--reporter","text-summary"], options);
-            console.log(myOutput);
-            console.log(myError);
           } else {
             console.log("coverage does not exists");
           }
@@ -53,6 +38,23 @@ async function run(): Promise<void> {
   } catch (e: any) {
     core.setFailed(e);
   }
+
+  let myOutput = "";
+  let myError = "";
+
+  const options: any = {};
+  options.listeners = {
+    stdout: (data: Buffer) => {
+      myOutput += data.toString();
+    },
+    stderr: (data: Buffer) => {
+      myError += data.toString();
+    },
+  };
+  await exec("ls", [".nyc_output", "-a"]);
+  await exec("npx", ["nyc", "report", "--reporter", "text-summary"], options);
+  console.log(myOutput);
+  console.log(myError);
 }
 
 async function getSubFolders(path: string): Promise<string[]> {
