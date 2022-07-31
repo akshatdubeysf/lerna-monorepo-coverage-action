@@ -1,10 +1,12 @@
 import * as core from "@actions/core";
 import { exec } from "@actions/exec";
-import { copyFileSync, existsSync, readdir, stat } from "fs";
+import { mkdirP, cp} from "@actions/io";
+import { existsSync, readdir, stat } from "fs";
 import { resolve } from "path";
 
 async function run(): Promise<void> {
   const reportsPath = ".nyc_output";
+  await mkdirP(reportsPath);
   const types = core
     .getInput("folders")
     .split(",")
@@ -26,7 +28,7 @@ async function run(): Promise<void> {
           if (existsSync(targetFilePath)) {
             console.log(`Copying the coverage report for ${item}...`);
             const destFilePath = resolve(reportsPath, `${item}.json`);
-            copyFileSync(targetFilePath, destFilePath);
+            cp(targetFilePath, destFilePath, { recursive: true, force: false });
             let myOutput = "";
             let myError = "";
 

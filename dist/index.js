@@ -32,10 +32,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(249));
 const exec_1 = __nccwpck_require__(288);
+const io_1 = __nccwpck_require__(609);
 const fs_1 = __nccwpck_require__(147);
 const path_1 = __nccwpck_require__(17);
 async function run() {
     const reportsPath = ".nyc_output";
+    await (0, io_1.mkdirP)(reportsPath);
     const types = core
         .getInput("folders")
         .split(",")
@@ -52,7 +54,7 @@ async function run() {
                     if ((0, fs_1.existsSync)(targetFilePath)) {
                         console.log(`Copying the coverage report for ${item}...`);
                         const destFilePath = (0, path_1.resolve)(reportsPath, `${item}.json`);
-                        (0, fs_1.copyFileSync)(targetFilePath, destFilePath);
+                        (0, io_1.cp)(targetFilePath, destFilePath, { recursive: true, force: false });
                         let myOutput = "";
                         let myError = "";
                         const options = {};
