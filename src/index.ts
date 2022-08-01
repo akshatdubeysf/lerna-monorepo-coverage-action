@@ -77,6 +77,7 @@ async function run(): Promise<void> {
       resolve("coverage", "coverage-summary.json")
     );
     console.log("md", md);
+    console.log("pr", context.payload.pull_request);
     if (context.payload.pull_request?.number) {
       console.log('attempting comment');
       await octokit.rest.issues.createComment({
@@ -124,6 +125,7 @@ async function createMarkDown(path: string): Promise<string> {
       if (!err) {
         const report = JSON.parse(data) as ReportJson;
         const md = markdownTable([
+          ["type", "coverage"],
           ["statements", `${report.total.statements.pct}%`],
           ["lines", `${report.total.lines.pct}%`],
           ["functions", `${report.total.functions.pct}%`],

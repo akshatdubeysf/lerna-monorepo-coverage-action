@@ -97,6 +97,7 @@ async function run() {
         console.log("report", output);
         const md = await createMarkDown((0, path_1.resolve)("coverage", "coverage-summary.json"));
         console.log("md", md);
+        console.log("pr", github_1.context.payload.pull_request);
         if ((_a = github_1.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number) {
             console.log('attempting comment');
             await octokit.rest.issues.createComment({
@@ -146,6 +147,7 @@ async function createMarkDown(path) {
             if (!err) {
                 const report = JSON.parse(data);
                 const md = (0, markdown_table_1.markdownTable)([
+                    ["type", "coverage"],
                     ["statements", `${report.total.statements.pct}%`],
                     ["lines", `${report.total.lines.pct}%`],
                     ["functions", `${report.total.functions.pct}%`],
