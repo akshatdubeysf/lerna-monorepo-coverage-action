@@ -1,11 +1,14 @@
-name: 'Consonant vowel ratio'
-author: 'Chris Trzesniewski'
-description: 'Custom GH action with TypeScript'
+name: "Consonant vowel ratio"
+author: "Chris Trzesniewski"
+description: "Custom GH action with TypeScript"
 inputs:
-  folders:  # id of input
-    description: 'Folders to look for coverage files'
+  folders: # id of input
+    description: "Folders to look for coverage files"
     required: true
-    default: 'packages,services,facades'
+    default: "packages,services,facades"
+  token:
+    description: "Github token for writing comments"
+    required: true
 runs:
-  using: 'node16'
-  main: 'dist/index.js'
+  using: "node16"
+  main: "dist/index.js"
