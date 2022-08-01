@@ -97,12 +97,12 @@ async function run() {
         console.log("report", output);
         const md = await createMarkDown((0, path_1.resolve)("coverage", "coverage-summary.json"));
         console.log("md", md);
-        console.log("pr", github_1.context.payload.pull_request);
-        if ((_a = github_1.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number) {
+        console.log("pr", github_1.context.issue);
+        if ((_a = github_1.context.issue) === null || _a === void 0 ? void 0 : _a.number) {
             console.log('attempting comment');
             await octokit.rest.issues.createComment({
                 ...github_1.context.repo,
-                issue_number: (_b = github_1.context.payload.pull_request) === null || _b === void 0 ? void 0 : _b.number,
+                issue_number: (_b = github_1.context.issue) === null || _b === void 0 ? void 0 : _b.number,
                 body: md,
             });
             console.log('comment done');
