@@ -77,7 +77,7 @@ async function run(): Promise<void> {
       resolve("coverage", "coverage-summary.json")
     );
     console.log("md", md);
-    console.log("pr", context.issue);
+    console.log("pr", context.payload);
     if (context.issue?.number) {
       console.log('attempting comment');
       await octokit.rest.issues.createComment({

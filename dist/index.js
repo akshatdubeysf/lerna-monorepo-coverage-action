@@ -97,7 +97,7 @@ async function run() {
         console.log("report", output);
         const md = await createMarkDown((0, path_1.resolve)("coverage", "coverage-summary.json"));
         console.log("md", md);
-        console.log("pr", github_1.context.issue);
+        console.log("pr", github_1.context.payload);
         if ((_a = github_1.context.issue) === null || _a === void 0 ? void 0 : _a.number) {
             console.log('attempting comment');
             await octokit.rest.issues.createComment({
