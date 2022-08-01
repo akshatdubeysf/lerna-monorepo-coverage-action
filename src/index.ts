@@ -78,11 +78,13 @@ async function run(): Promise<void> {
     );
     console.log("md", md);
     if (context.payload.pull_request?.number) {
-      octokit.rest.issues.createComment({
+      console.log('attempting comment');
+      await octokit.rest.issues.createComment({
         ...context.repo,
         issue_number: context.payload.pull_request?.number,
         body: md,
       });
+      console.log('comment done');
       core.setOutput("comment", md);
     }
     core.setOutput("exitCode", exitCode);
