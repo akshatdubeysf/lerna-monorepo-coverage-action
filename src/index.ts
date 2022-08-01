@@ -72,14 +72,12 @@ async function run(): Promise<void> {
       ["nyc", "report", "--reporter", "json-summary"],
       options
     );
-    console.log(output);
+    console.log("report", output);
     const md = await createMarkDown(
       resolve("coverage", "coverage-summary.json")
     );
-    if (
-      context?.payload?.repository?.full_name &&
-      context.payload.pull_request?.number
-    ) {
+    console.log("md", md);
+    if (context.payload.pull_request?.number) {
       octokit.rest.issues.createComment({
         ...context.repo,
         issue_number: context.payload.pull_request?.number,

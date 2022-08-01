@@ -38,7 +38,7 @@ const fs_1 = __nccwpck_require__(7147);
 const markdown_table_1 = __nccwpck_require__(7377);
 const path_1 = __nccwpck_require__(1017);
 async function run() {
-    var _a, _b, _c, _d;
+    var _a, _b;
     const reportsPath = ".nyc_output";
     const token = core.getInput("token");
     const octokit = (0, github_1.getOctokit)(token);
@@ -94,13 +94,13 @@ async function run() {
     };
     try {
         const exitCode = await (0, exec_1.exec)("npx", ["nyc", "report", "--reporter", "json-summary"], options);
-        console.log(output);
+        console.log("report", output);
         const md = await createMarkDown((0, path_1.resolve)("coverage", "coverage-summary.json"));
-        if (((_b = (_a = github_1.context === null || github_1.context === void 0 ? void 0 : github_1.context.payload) === null || _a === void 0 ? void 0 : _a.repository) === null || _b === void 0 ? void 0 : _b.full_name) &&
-            ((_c = github_1.context.payload.pull_request) === null || _c === void 0 ? void 0 : _c.number)) {
+        console.log("md", md);
+        if ((_a = github_1.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number) {
             octokit.rest.issues.createComment({
                 ...github_1.context.repo,
-                issue_number: (_d = github_1.context.payload.pull_request) === null || _d === void 0 ? void 0 : _d.number,
+                issue_number: (_b = github_1.context.payload.pull_request) === null || _b === void 0 ? void 0 : _b.number,
                 body: md,
             });
             core.setOutput("comment", md);
