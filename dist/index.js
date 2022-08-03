@@ -54,7 +54,6 @@ async function run() {
             for (let item of items) {
                 const itemPath = (0, path_1.resolve)(type, item);
                 if (await checkIfDirectory(itemPath)) {
-                    console.log("exists");
                     const targetFilePath = (0, path_1.resolve)(itemPath, "coverage", "coverage-final.json");
                     if ((0, fs_1.existsSync)(targetFilePath)) {
                         console.log(`Copying the coverage report for ${item}...`);
@@ -97,15 +96,18 @@ async function run() {
         console.log("report", output);
         const md = await createMarkDown((0, path_1.resolve)("coverage", "coverage-summary.json"));
         console.log("md", md);
-        console.log("pr", github_1.context.payload);
+        console.log("pr", JSON.stringify(github_1.context.action));
+        console.log("pr", JSON.stringify(github_1.context.actor));
+        console.log("pr", JSON.stringify(github_1.context.payload));
+        console.log("pr", JSON.stringify(github_1.context.issue));
         if ((_a = github_1.context.issue) === null || _a === void 0 ? void 0 : _a.number) {
-            console.log('attempting comment');
+            console.log("attempting comment");
             await octokit.rest.issues.createComment({
                 ...github_1.context.repo,
                 issue_number: (_b = github_1.context.issue) === null || _b === void 0 ? void 0 : _b.number,
                 body: md,
             });
-            console.log('comment done');
+            console.log("comment done");
             core.setOutput("comment", md);
         }
         core.setOutput("exitCode", exitCode);

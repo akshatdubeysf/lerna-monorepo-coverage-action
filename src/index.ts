@@ -23,7 +23,6 @@ async function run(): Promise<void> {
       for (let item of items) {
         const itemPath = resolve(type, item);
         if (await checkIfDirectory(itemPath)) {
-          console.log("exists");
           const targetFilePath = resolve(
             itemPath,
             "coverage",
@@ -77,15 +76,18 @@ async function run(): Promise<void> {
       resolve("coverage", "coverage-summary.json")
     );
     console.log("md", md);
-    console.log("pr", context.payload);
+    console.log("pr", JSON.stringify(context.action));
+    console.log("pr", JSON.stringify(context.actor));
+    console.log("pr", JSON.stringify(context.payload));
+    console.log("pr", JSON.stringify(context.issue));
     if (context.issue?.number) {
-      console.log('attempting comment');
+      console.log("attempting comment");
       await octokit.rest.issues.createComment({
         ...context.repo,
         issue_number: context.issue?.number,
         body: md,
       });
-      console.log('comment done');
+      console.log("comment done");
       core.setOutput("comment", md);
     }
     core.setOutput("exitCode", exitCode);
