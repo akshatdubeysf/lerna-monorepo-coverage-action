@@ -6,12 +6,42 @@ import { existsSync, readdir, readFile, stat } from "fs";
 import { markdownTable } from "markdown-table";
 import { resolve } from "path";
 import { ReportJson } from "./types";
+import { create } from "@actions/artifact";
 
 async function run(): Promise<void> {
+  if (context.payload.pull_request?.merged) {
+    checkAndCommentCoverage(
+      context.issue.number,
+      context.payload.pull_request?.id,
+      context.payload.pull_request?.base.ref
+    );
+  } else {
+    saveBranchCoverageArtifact(
+      context.payload.pull_request?.id,
+      context.payload.pull_request?.base.ref
+    );
+  }
+}
+
+async function saveBranchCoverageArtifact(prId: string, branch: string) {
+  const client = create();
+  const file = await client.downloadArtifact(prId, "./");
+  await client.uploadArtifact(branch, [file.downloadPath], ".", {
+    retentionDays: 10,
+  });
+}
+
+async function checkAndCommentCoverage(
+  prNumber: number,
+  prId: string,
+  branch: string
+) {
+  const jsons = [];
   const reportsPath = ".nyc_output";
   const token = core.getInput("token");
+
   const octokit = getOctokit(token);
-  const jsons = [];
+
   await mkdirP(reportsPath);
   const types = core
     .getInput("folders")
@@ -53,48 +83,43 @@ async function run(): Promise<void> {
     core.setFailed(e);
   }
 
-  let output = "";
-  let error = "";
-
-  const options: any = {};
-  options.listeners = {
-    stdout: (data: Buffer) => {
-      output += data.toString();
-    },
-    stderr: (data: Buffer) => {
-      error += data.toString();
-    },
-  };
   try {
-    const exitCode = await exec(
-      "npx",
-      ["nyc", "report", "--reporter", "json-summary"],
-      options
-    );
-    console.log("report", output);
+    await exec("npx", ["nyc", "report", "--reporter", "json-summary"]);
+    const prevPath = await getPreviousCoverage(branch);
+    const coveragePath = resolve("coverage", "coverage-summary.json");
     const md = await createMarkDown(
-      resolve("coverage", "coverage-summary.json")
+      coveragePath,
+      prevPath
     );
-    console.log("md", md);
-    console.log("pr", JSON.stringify(context.action));
-    console.log("pr", JSON.stringify(context.actor));
-    console.log("pr", JSON.stringify(context.payload));
-    console.log("pr", JSON.stringify(context.issue));
-    if (context.issue?.number) {
-      console.log("attempting comment");
-      await octokit.rest.issues.createComment({
-        ...context.repo,
-        issue_number: context.issue?.number,
-        body: md,
-      });
-      console.log("comment done");
-      core.setOutput("comment", md);
-    }
-    core.setOutput("exitCode", exitCode);
+    saveTempCoverage(prId, coveragePath);
+    await octokit.rest.issues.createComment({
+      ...context.repo,
+      issue_number: prNumber,
+      body: md,
+    });
   } catch (e: any) {
-    console.log(error);
     core.setFailed(e);
   }
+}
+
+async function getPreviousCoverage(branch: string) {
+  const client = create();
+  try {
+    const file = await client.downloadArtifact(branch, "./", {
+      createArtifactFolder: true,
+    });
+    return file.downloadPath;
+  } catch (e) {
+    console.log("No prev branch data for diff.");
+    return;
+  }
+}
+
+async function saveTempCoverage(prId: string, coveragePath: string) {
+  const client = create();
+  await client.uploadArtifact(prId, [coveragePath], ".", {
+    retentionDays: 1,
+  });
 }
 
 async function getSubFolders(path: string): Promise<string[]> {
@@ -121,7 +146,8 @@ async function checkIfDirectory(path: string) {
   });
 }
 
-async function createMarkDown(path: string): Promise<string> {
+async function createMarkDown(path: string, prev?: string): Promise<string> {
+  console.log(prev);
   return new Promise((resolve, reject) => {
     readFile(path, "utf8", function (err, data) {
       if (!err) {
