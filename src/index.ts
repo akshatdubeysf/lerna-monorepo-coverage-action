@@ -24,11 +24,13 @@ async function run(): Promise<void> {
 }
 
 async function saveBranchCoverageArtifact(prId: string, branch: string) {
+  console.log(`save ${branch} coverage`);
   const client = create();
   const file = await client.downloadArtifact(prId, "./");
   await client.uploadArtifact(branch, [file.downloadPath], ".", {
     retentionDays: 10,
   });
+  console.log(`saved ${branch} coverage`);
 }
 
 async function checkAndCommentCoverage(
@@ -87,10 +89,7 @@ async function checkAndCommentCoverage(
     await exec("npx", ["nyc", "report", "--reporter", "json-summary"]);
     const prevPath = await getPreviousCoverage(branch);
     const coveragePath = resolve("coverage", "coverage-summary.json");
-    const md = await createMarkDown(
-      coveragePath,
-      prevPath
-    );
+    const md = await createMarkDown(coveragePath, prevPath);
     saveTempCoverage(prId, coveragePath);
     await octokit.rest.issues.createComment({
       ...context.repo,
@@ -103,6 +102,7 @@ async function checkAndCommentCoverage(
 }
 
 async function getPreviousCoverage(branch: string) {
+  console.log(`getting prev coverage for ${branch}`);
   const client = create();
   try {
     const file = await client.downloadArtifact(branch, "./", {
@@ -116,10 +116,12 @@ async function getPreviousCoverage(branch: string) {
 }
 
 async function saveTempCoverage(prId: string, coveragePath: string) {
+  console.log(`saving temp coverage for current PR}`);
   const client = create();
   await client.uploadArtifact(prId, [coveragePath], ".", {
     retentionDays: 1,
   });
+  console.log(`saved`);
 }
 
 async function getSubFolders(path: string): Promise<string[]> {

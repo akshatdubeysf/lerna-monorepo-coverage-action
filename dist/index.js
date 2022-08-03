@@ -48,11 +48,13 @@ async function run() {
     }
 }
 async function saveBranchCoverageArtifact(prId, branch) {
+    console.log(`save ${branch} coverage`);
     const client = (0, artifact_1.create)();
     const file = await client.downloadArtifact(prId, "./");
     await client.uploadArtifact(branch, [file.downloadPath], ".", {
         retentionDays: 10,
     });
+    console.log(`saved ${branch} coverage`);
 }
 async function checkAndCommentCoverage(prNumber, prId, branch) {
     const jsons = [];
@@ -113,6 +115,7 @@ async function checkAndCommentCoverage(prNumber, prId, branch) {
     }
 }
 async function getPreviousCoverage(branch) {
+    console.log(`getting prev coverage for ${branch}`);
     const client = (0, artifact_1.create)();
     try {
         const file = await client.downloadArtifact(branch, "./", {
@@ -126,10 +129,12 @@ async function getPreviousCoverage(branch) {
     }
 }
 async function saveTempCoverage(prId, coveragePath) {
+    console.log(`saving temp coverage for current PR}`);
     const client = (0, artifact_1.create)();
     await client.uploadArtifact(prId, [coveragePath], ".", {
         retentionDays: 1,
     });
+    console.log(`saved`);
 }
 async function getSubFolders(path) {
     return new Promise((resolve, reject) => {
