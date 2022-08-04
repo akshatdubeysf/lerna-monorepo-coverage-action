@@ -9,18 +9,18 @@ import { ReportJson } from "./types";
 import { create } from "@actions/artifact";
 
 async function run(): Promise<void> {
-  if (!context.payload.pull_request?.merged) {
+  // if (!context.payload.pull_request?.merged) {
     checkAndCommentCoverage(
       context.issue.number,
       context.payload.pull_request?.id,
       context.payload.pull_request?.base.ref
     );
-  } else {
-    saveBranchCoverageArtifact(
-      context.payload.pull_request?.id,
-      context.payload.pull_request?.base.ref
-    );
-  }
+  // } else {
+  //   saveBranchCoverageArtifact(
+  //     context.payload.pull_request?.id,
+  //     context.payload.pull_request?.base.ref
+  //   );
+  // }
 }
 
 async function saveBranchCoverageArtifact(prId: string, branch: string) {
@@ -87,10 +87,11 @@ async function checkAndCommentCoverage(
 
   try {
     await exec("npx", ["nyc", "report", "--reporter", "json-summary"]);
-    const prevPath = await getPreviousCoverage(branch);
+    // const prevPath = await getPreviousCoverage(branch);
     const coveragePath = resolve("coverage", "coverage-summary.json");
-    const md = await createMarkDown(coveragePath, prevPath);
-    saveTempCoverage(prId, coveragePath);
+    const md = await createMarkDown(coveragePath);
+    // const md = await createMarkDown(coveragePath, prevPath);
+    // saveTempCoverage(prId, coveragePath);
     await octokit.rest.issues.createComment({
       ...context.repo,
       issue_number: prNumber,
