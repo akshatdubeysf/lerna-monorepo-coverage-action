@@ -9,7 +9,7 @@ import { ReportJson } from "./types";
 import { create } from "@actions/artifact";
 
 async function run(): Promise<void> {
-  if (context.payload.pull_request?.merged) {
+  if (!context.payload.pull_request?.merged) {
     checkAndCommentCoverage(
       context.issue.number,
       context.payload.pull_request?.id,

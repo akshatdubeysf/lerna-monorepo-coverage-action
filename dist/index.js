@@ -40,7 +40,7 @@ const path_1 = __nccwpck_require__(1017);
 const artifact_1 = __nccwpck_require__(7452);
 async function run() {
     var _a, _b, _c, _d, _e;
-    if ((_a = github_1.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.merged) {
+    if (!((_a = github_1.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.merged)) {
         checkAndCommentCoverage(github_1.context.issue.number, (_b = github_1.context.payload.pull_request) === null || _b === void 0 ? void 0 : _b.id, (_c = github_1.context.payload.pull_request) === null || _c === void 0 ? void 0 : _c.base.ref);
     }
     else {
